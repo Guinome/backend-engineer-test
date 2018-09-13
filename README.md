@@ -1,4 +1,12 @@
 Hi !
+You'll find the original content below this short paragraph.
+Since `exercice/freelancer.json` have ne professionnal experiences I used `examples/freelancer.json`.
+
+```
+Original content
+```
+
+Hi !
 
 This is an off-site test for Backend Engineer in the process of joining the comet team.
 
