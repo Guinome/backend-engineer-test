@@ -1,4 +1,5 @@
 Hi !
+<<<<<<< HEAD
 You'll find the original content below this short paragraph.
 Since `exercice/freelancer.json` have ne professionnal experiences I used `examples/freelancer.json`.
 
@@ -7,6 +8,8 @@ Original content
 ```
 
 Hi !
+=======
+>>>>>>> 43fc818a003ab31de6e3edf1ad0af031f11f7b51
 
 This is an off-site test for Backend Engineer in the process of joining the comet team.
 
