@@ -2,7 +2,10 @@
   "name": "comet-backend-engineer-test",
   "version": "1.0.0",
   "description": "comet backend engineer test",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "moment": "^2.22.2"
+  },
   "engines": {
     "node": "8.4.0"
   },
