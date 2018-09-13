@@ -3,8 +3,12 @@ Hi !
 You'll find the original content below this short paragraph.
 Since `exercice/freelancer.json` have ne professionnal experiences I used `examples/freelancer.json`.
 
+todo 
+ • 6th rule : if error in json input, exit without printing anything
+ • 7th rule : round month durations
+
 ```
-Original content
+Original content below
 ```
 
 Hi !
