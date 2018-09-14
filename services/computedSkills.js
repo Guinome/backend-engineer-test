@@ -42,7 +42,7 @@ module.exports = {
         var startDate = moment(experience.startDate);
         var endDate = moment(experience.endDate);
 
-        var duration = endDate.diff(startDate, 'month');
+        var duration = Math.round(endDate.diff(startDate, 'month', true));
         return duration;
     },
 
@@ -60,7 +60,7 @@ module.exports = {
         var durationToSubstract = 0;
         //If there is overlap, we change the duration to substract
         if (currentExperienceStartDate.isBefore(previousExperienceEndDate)) {
-            var durationToSubstract = previousExperienceEndDate.diff(currentExperienceStartDate, 'month');
+            var durationToSubstract = Math.round(previousExperienceEndDate.diff(currentExperienceStartDate, 'month', true));
         }
         return durationToSubstract;
     },
@@ -69,5 +69,7 @@ module.exports = {
         return _.findIndex(skills, function (skill) { 
             return skill.id == skillToFind.id;
         });
-    }
+    },
+
+
 };
