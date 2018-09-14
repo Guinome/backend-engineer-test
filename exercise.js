@@ -13,6 +13,10 @@ let freelancer = fs.readFileSync(freelancerFile, 'utf8');
 
 freelancer = JSON.parse(freelancer);
 
+const isJsonOk = computedSkillsService.checkJsonFile(freelancer);
+if(!isJsonOk){
+	return false;
+}
 //order professional experiences by startdate
 var experiences    = computedSkillsService.getExperiencesOrderedByStartDate(freelancer.freelance)
 var computedSkills = computedSkillsService.getComputedSkills(experiences);
