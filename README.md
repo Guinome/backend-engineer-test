@@ -1,3 +1,10 @@
+Todo :
+ • unit tests
+ • modify computedSkills
+ 1. class each skills with pairs of durations,
+ 2. merge all durations
+ the point is to avoid "extreme" cases
+
 Hi !
 This is an off-site test for Backend Engineer in the process of joining the comet team.
 
