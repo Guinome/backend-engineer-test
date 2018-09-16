@@ -5,70 +5,119 @@ module.exports = {
         return _.orderBy(freelance.professionalExperiences, ['startDate'], ['asc']);
     },
 
-    getComputedSkills(experiences){
-        var totalSkills = [];
-
+    getSkillsWithDates(experiences){
+        var skills = [];
+        // format ↓
+        // {
+        //     skills: [
+        //         {
+        //             id: 0,
+        //             name: 'name',
+        //             dates: [
+        //                 {
+        //                     startDate: 'date',
+        //                     endDate: 'date'
+        //                 }
+        //             ]
+        //         }
+        //     ]
+        // }
         for (let index = 0; index < experiences.length; index++) {
-            var currentExperience         = experiences[index];
-            var currentExperienceDuration = this.getExperienceDuration(currentExperience);
-            // première iteration = initialisation des premiers skills
-            if(index === 0){
-                totalSkills = this.initFirstSkills(currentExperience.skills, currentExperienceDuration);
-            } else {
-                var durationToSubstract = this.getDurationToSubstract(experiences[index - 1], experiences[index]);
-    
-                currentExperience.skills.forEach(skill => {
-                    var skillIndex = this.getSkillIndex(totalSkills, skill);
-                    //If the skill doesn't exist, we create it
-                    if (skillIndex === -1) {
-                        var newSkill = skill;
-                        newSkill.durationInMonth = currentExperienceDuration;
-                        totalSkills.push(newSkill);
-                    } else{
-                        totalSkills[skillIndex].durationInMonth += currentExperienceDuration;
-                        var previousSkillIndex = this.getSkillIndex(experiences[index - 1].skills, skill);
-                        if(previousSkillIndex !== -1){
-                            totalSkills[skillIndex].durationInMonth -= durationToSubstract;
-                        }
-                    }
-                });
+            var dates = {
+                'startDate': experiences[index].startDate,
+                'endDate': experiences[index].endDate
+            };
+            // console.log(experiences)
+            experiences[index].skills.forEach(skill => {
+                newSkill = _.find(skills, ['id', skill.id]);
+                // console.log(newSkill);
+                if(newSkill === undefined){
+                    newSkill = skill;
+                    newSkill.dates = [];
+                    newSkill.dates.push(dates);
+                    skills.push(newSkill);
+                } else {
+                    newSkill.dates.push(dates);
+                }
+            });
+        }
+        // console.log(JSON.stringify(skills));
+        return skills;
+    },
+
+    getComputedSkills(skills){
+        var computedSkills = [];
+        // format ↓
+        // {
+        //     computedSkills: [
+        //         {
+        //             id: 0,
+        //             name: 'name',
+        //             durationInMonths: 0
+        //         }
+        //     ]
+        // }
+        skills.forEach(skill => {
+            var newSkill = {
+                'id': skill.id,
+                'name': skill.name,
+                'durationInMonths': 0
+            };
+
+            var periods = this.cleanPeriods(skill.dates);
+            durationInMonths = 0;
+            periods.forEach(period => {
+                var duration = this.getPeriodeDuration(period);
+                durationInMonths += duration;
+            });
+            newSkill.durationInMonths = Math.round(durationInMonths);
+            computedSkills.push(newSkill);
+        });
+        return computedSkills;
+    },
+
+    cleanPeriods(periods){
+        // format ↓
+        // {
+        //     periods : [
+        //         {
+        //             startDate: 'date',
+        //             endDate: ''
+        //         }
+        //     ]
+        // }
+        var orderedPeriods = _.orderBy(periods, ['startDate'], ['asc']);
+        // console.log(orderedPeriods);
+        var cleanedPeriods = [];
+        cleanedPeriods.push(orderedPeriods[0]);
+        for (let index = 1; index < orderedPeriods.length; index++) {
+
+            // if newStartDate < previousStartDate
+            if (orderedPeriods[index].startDate < cleanedPeriods[cleanedPeriods.length - 1].startDate) {
+                //previousStartDate = newStartDate
+                cleanedPeriods[cleanedPeriods.length - 1].startDate = orderedPeriods[index].startDate;
+            }
+            // if newStartDate <= previousEndDate && newEndDate > previousEndDate
+            if (orderedPeriods[index].startDate <= cleanedPeriods[cleanedPeriods.length - 1].endDate &&
+                orderedPeriods[index].endDate > cleanedPeriods[cleanedPeriods.length - 1].endDate ) {
+                //previousEndDate = newEndDate
+                cleanedPeriods[cleanedPeriods.length - 1].endDate = orderedPeriods[index].endDate;
+            }
+            // if newStartDate > previousEndDate
+            if (orderedPeriods[index].startDate > cleanedPeriods[cleanedPeriods.length - 1].endDate){
+                cleanedPeriods.push(orderedPeriods[index])
             }
         }
-
-        return totalSkills;
+        // console.log(cleanedPeriods);
+        return cleanedPeriods;
     },
 
-    getExperienceDuration(experience) {
-        var startDate = moment(experience.startDate);
-        var endDate = moment(experience.endDate);
+    getPeriodeDuration(dates) {
+        var startDate = moment(dates.startDate);
+        var endDate = moment(dates.endDate);
 
-        var duration = Math.round(endDate.diff(startDate, 'month', true));
+        var duration = endDate.diff(startDate, 'month', true);
         return duration;
-    },
-
-    initFirstSkills(skills, duration) {
-        var firstSkills = _.map(skills, function (skill) {
-            skill.durationInMonth = duration;
-            return skill;
-        });
-        return firstSkills;
-    },
-
-    getDurationToSubstract(previousExperience, currentExperience){
-        const previousExperienceEndDate = moment(previousExperience.endDate);
-        const currentExperienceStartDate = moment(currentExperience.startDate);
-        var durationToSubstract = 0;
-        //If there is overlap, we change the duration to substract
-        if (currentExperienceStartDate.isBefore(previousExperienceEndDate)) {
-            var durationToSubstract = Math.round(previousExperienceEndDate.diff(currentExperienceStartDate, 'month', true));
-        }
-        return durationToSubstract;
-    },
-
-    getSkillIndex(skills, skillToFind){
-        return _.findIndex(skills, function (skill) { 
-            return skill.id == skillToFind.id;
-        });
     },
 
     //check if we have the same properties and types of values than in `[examples | exercice]/freelancer.json`

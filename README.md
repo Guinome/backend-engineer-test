@@ -3,11 +3,12 @@ Unit tests with mocha & chai
  2. `mocha tests --recursive [--watch]`
 
 Todo :
- • unit tests
- • modify computedSkills
- 1. class each skills with pairs of durations,
- 2. merge all durations
+ - [x] unit tests :white_check_mark:
+ - [x] modify computedSkills :white_check_mark:
+    - [x] class each skills with pairs of durations,
+	- [x] merge all durations
  the point is to avoid "extreme" cases
+ - [ ] test dates (checkJson / unitTest)
 
 Hi !
 This is an off-site test for Backend Engineer in the process of joining the comet team.
