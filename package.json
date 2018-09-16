@@ -14,5 +14,8 @@
   "bugs": {
     "url": "https://github.com/hellocomet/backend-engineer-test/issues"
   },
-  "homepage": "https://github.com/hellocomet/backend-engineer-test"
+  "homepage": "https://github.com/hellocomet/backend-engineer-test",
+  "devDependencies": {
+    "chai": "^4.1.2"
+  }
 }
