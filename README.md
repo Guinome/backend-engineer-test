@@ -3,8 +3,8 @@ Unit tests with mocha & chai
  2. `mocha tests --recursive [--watch]`
 
 Todo :
- - [x] unit tests :white_check_mark:
- - [x] modify computedSkills :white_check_mark:
+ - [x] unit tests
+ - [x] modify computedSkills :
     - [x] class each skills with pairs of durations,
 	- [x] merge all durations
  the point is to avoid "extreme" cases
