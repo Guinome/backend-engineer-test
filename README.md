@@ -1,3 +1,7 @@
+Unit tests with mocha & chai
+ 1. `npm install mocha -g`
+ 2. `mocha tests --recursive [--watch]`
+
 Todo :
  • unit tests
  • modify computedSkills

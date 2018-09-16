@@ -16,12 +16,14 @@ freelancer = JSON.parse(freelancer);
 describe('computedSkillsService.getComputedSkills(experiences)', function () {
 
     // check edge case where one exp overlap all the others:
-    // exp 1    --------------------------------
+    // exp 1    --------------------
     // exp 2        -------
     // exp 3            --------
+    //
     // 1 : react, node, javascript
     // 2 : javascript, java
     // 3 : mysql, java, javascript
+    //
     //react, node, javascript = 72
     //mysql = 32
     //java = 40
