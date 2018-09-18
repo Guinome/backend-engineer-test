@@ -3,62 +3,54 @@ var expect = chai.expect; // we are using the "expect" style of Chai
 var computedSkillsService = require('../../../services/computedSkills');
 const _ = require('lodash');
 const fs = require('fs');
-const freelancerFile = './tests/examples/freelancer.json';
-const freelancer2File = './tests/examples/freelancer2.json';
 
-if (!fs.existsSync(freelancerFile)) {
-    console.log('File does not exists');
-}
+//get inputs
+const freelancerFiles = [
+    './tests/examples/freelancer.json',
+    './tests/examples/freelancer2.json',
+    './tests/examples/freelancer3.json'
+];
+var freelancers = [];
+freelancerFiles.forEach(file => {
+    if (!fs.existsSync(file)) {
+        console.log('File ' + file + ' does not exists');
+    }
 
-let freelancer = fs.readFileSync(freelancerFile, 'utf8');
-freelancer = JSON.parse(freelancer);
+    let freelancer = fs.readFileSync(file, 'utf8');
+    freelancers.push(JSON.parse(freelancer));
+});
 
-if (!fs.existsSync(freelancer2File)) {
-    console.log('File does not exists');
-}
+// get outputs
+const outputFiles = [
+    './tests/outputs/freelancer.json',
+    './tests/outputs/freelancer2.json',
+    './tests/outputs/freelancer3.json'
+];
+var outputs = [];
+outputFiles.forEach(file => {
+    if (!fs.existsSync(file)) {
+        console.log('File ' + file + ' does not exists');
+    }
 
-let freelancer2 = fs.readFileSync(freelancer2File, 'utf8');
-freelancer2 = JSON.parse(freelancer2);
+    let output = fs.readFileSync(file, 'utf8');
+    outputs.push(JSON.parse(output));
+});
 
 
-describe('computedSkillsService.getComputedSkills(experiences)', function () {
+freelancers.forEach((freelancer, index) => {
+    describe('computedSkillsService.getComputedSkills(experiences)', function () {
+        var experiences = computedSkillsService.getExperiencesOrderedByStartDate(freelancer.freelance);
+        var skills = computedSkillsService.getSkillsWithDates(experiences)
+        var computedSkills = computedSkillsService.getComputedSkills(skills);
+        
+        const computedSkillsOutput = outputs[index].freelance.computedSkills;
 
-    // check edge case where one exp overlap all the others:
-    // exp 1    --------------------
-    // exp 2        -------
-    // exp 3            --------
-    // exp 4                            ----
-    //
-    // 1 : react, node, javascript
-    // 2 : javascript, java
-    // 3 : mysql, java, javascript
-    // 4 : react, node, javascript
-    //
-    //react, node, javascript = 74
-    //mysql = 32
-    //java = 40
-    var experiences = computedSkillsService.getExperiencesOrderedByStartDate(freelancer2.freelance);
-    var skills = computedSkillsService.getSkillsWithDates(experiences)
-    var computedSkills = computedSkillsService.getComputedSkills(skills);
+        computedSkillsOutput.forEach(skill => {
+            it('return true if durationInMonths of ' + skill.name + ' == ' + skill.durationInMonths, function () {
+                var skillToCheck = _.find(computedSkills, ['id', skill.id]);
+                expect(skillToCheck.durationInMonths).to.equal(skill.durationInMonths);
+            });
 
-    it('return true if react.durationInMonths == 74 ', function () {
-        var react = _.find(computedSkills, ['name', 'React']);
-        expect(react.durationInMonths).to.equal(6 * 12 + 2);
-    });
-    it('return true if node.durationInMonths == 74 ', function () {
-        var node = _.find(computedSkills, ['name', 'Node.js']);
-        expect(node.durationInMonths).to.equal(6 * 12 + 2);
-    });
-    it('return true if js.durationInMonths == 74 ', function () {
-        var js = _.find(computedSkills, ['name', 'Javascript']);
-        expect(js.durationInMonths).to.equal(6 * 12 + 2);
-    });
-    it('return true if java.durationInMonths == 40 ', function () {
-        var java = _.find(computedSkills, ['name', 'Java']);
-        expect(java.durationInMonths).to.equal(3 * 12 + 4);
-    });
-    it('return true if mysql.durationInMonths == 32 ', function () {
-        var mysql = _.find(computedSkills, ['name', 'MySQL']);
-        expect(mysql.durationInMonths).to.equal(2 * 12 + 8);
+        });
     });
 });

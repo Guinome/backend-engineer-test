@@ -7,30 +7,13 @@ module.exports = {
 
     getSkillsWithDates(experiences){
         var skills = [];
-        // format ↓
-        // {
-        //     skills: [
-        //         {
-        //             id: 0,
-        //             name: 'name',
-        //             dates: [
-        //                 {
-        //                     startDate: 'date',
-        //                     endDate: 'date'
-        //                 }
-        //             ]
-        //         }
-        //     ]
-        // }
         for (let index = 0; index < experiences.length; index++) {
             var dates = {
                 'startDate': experiences[index].startDate,
                 'endDate': experiences[index].endDate
             };
-            // console.log(experiences)
             experiences[index].skills.forEach(skill => {
                 newSkill = _.find(skills, ['id', skill.id]);
-                // console.log(newSkill);
                 if(newSkill === undefined){
                     newSkill = skill;
                     newSkill.dates = [];
@@ -41,33 +24,23 @@ module.exports = {
                 }
             });
         }
-        // console.log(JSON.stringify(skills));
         return skills;
     },
 
     getComputedSkills(skills){
+        // console.log(JSON.stringify((skills), null, 2)); 
         var computedSkills = [];
-        // format ↓
-        // {
-        //     computedSkills: [
-        //         {
-        //             id: 0,
-        //             name: 'name',
-        //             durationInMonths: 0
-        //         }
-        //     ]
-        // }
-        skills.forEach(skill => {
-            var newSkill = {
+
+        _.forEach(skills, skill => {
+            let newSkill = {
                 'id': skill.id,
                 'name': skill.name,
                 'durationInMonths': 0
             };
-
-            var periods = this.cleanPeriods(skill.dates);
+            const periods = this.cleanPeriods(skill.dates);
             durationInMonths = 0;
             periods.forEach(period => {
-                var duration = this.getPeriodeDuration(period);
+                const duration = this.getPeriodeDuration(period);
                 durationInMonths += duration;
             });
             newSkill.durationInMonths = Math.round(durationInMonths);
@@ -77,38 +50,67 @@ module.exports = {
     },
 
     cleanPeriods(periods){
-        // format ↓
-        // {
-        //     periods : [
-        //         {
-        //             startDate: 'date',
-        //             endDate: ''
-        //         }
-        //     ]
-        // }
-        var orderedPeriods = _.orderBy(periods, ['startDate'], ['asc']);
-        // console.log(orderedPeriods);
-        var cleanedPeriods = [];
-        cleanedPeriods.push(orderedPeriods[0]);
-        for (let index = 1; index < orderedPeriods.length; index++) {
+        let orderedPeriods = _.orderBy(periods, ['startDate'], ['asc']);
+        let cleanedPeriods = _.take(orderedPeriods);
 
-            // if newStartDate < previousStartDate
-            if (orderedPeriods[index].startDate < cleanedPeriods[cleanedPeriods.length - 1].startDate) {
-                //previousStartDate = newStartDate
-                cleanedPeriods[cleanedPeriods.length - 1].startDate = orderedPeriods[index].startDate;
+        _.forEach(orderedPeriods, period => {
+            if(!cleanedPeriods.length){
+                cleanedPeriods.push(period);
+                return;
             }
-            // if newStartDate <= previousEndDate && newEndDate > previousEndDate
-            if (orderedPeriods[index].startDate <= cleanedPeriods[cleanedPeriods.length - 1].endDate &&
-                orderedPeriods[index].endDate > cleanedPeriods[cleanedPeriods.length - 1].endDate ) {
-                //previousEndDate = newEndDate
-                cleanedPeriods[cleanedPeriods.length - 1].endDate = orderedPeriods[index].endDate;
+            var newStartDate = period.startDate;
+            var newEndDate = period.endDate;
+            var oldStartDate = cleanedPeriods[cleanedPeriods.length - 1].startDate;
+            var oldEndDate = cleanedPeriods[cleanedPeriods.length - 1].endDate;
+
+            //oldDates:       -----
+            //newDates:   ---
+            //add: 
+            //theoretically impossible, cleanedPeriods are reordered by start date
+            if(newEndDate <= oldStartDate) {
+                let newImpossibleDate = {
+                    'startDate': newStartDate,
+                    'endDate': newEndDate
+                };
+                cleanedPeriods.unshift(newImpossibleDate);
             }
-            // if newStartDate > previousEndDate
-            if (orderedPeriods[index].startDate > cleanedPeriods[cleanedPeriods.length - 1].endDate){
-                cleanedPeriods.push(orderedPeriods[index])
+
+            //oldDates:     ---[
+            //newDates:   -----[
+            //add:        --
+            if (newStartDate < oldStartDate && newEndDate < oldEndDate){
+                let newFirstDate = {
+                    'startDate': newStartDate,
+                    'endDate': oldStartDate
+                };
+                cleanedPeriods.unshift(newFirstDate);
             }
-        }
-        // console.log(cleanedPeriods);
+
+            //oldDates:     ]--
+            //newDates:     ]------
+            //add:             ----
+            if(newStartDate <= oldEndDate && newEndDate > oldEndDate) {
+                let newLastDate = {
+                    'startDate': oldEndDate,
+                    'endDate': newEndDate
+                };
+                cleanedPeriods.push(newLastDate);
+            }
+
+            //oldDates:     ]-
+            //newDates:        ----[
+            //add:             ----[
+            if (newStartDate >= oldEndDate) {
+                let newLastDate = {
+                    'startDate': newStartDate,
+                    'endDate': newEndDate
+                };
+                cleanedPeriods.push(newLastDate);
+            }
+            cleanedPeriods.sort((a, b) => {
+                return a - b;
+            });
+        });
         return cleanedPeriods;
     },
 
@@ -116,7 +118,7 @@ module.exports = {
         var startDate = moment(dates.startDate);
         var endDate = moment(dates.endDate);
 
-        var duration = endDate.diff(startDate, 'month', true);
+        var duration = Math.round(endDate.diff(startDate, 'month', true));
         return duration;
     },
 

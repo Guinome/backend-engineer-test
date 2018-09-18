@@ -13,8 +13,8 @@
             {
                 "id": 4,
                 "companyName": "Okuneva, Kerluke and Strosin",
-                "startDate": "2012-01-01T00:00:00+01:00",
-                "endDate": "2018-01-01T00:00:00+01:00",
+                "startDate": "2016-01-01T00:00:00+01:00",
+                "endDate": "2018-05-01T00:00:00+01:00",
                 "skills": [
                     {
                         "id": 241,
@@ -27,22 +27,6 @@
                     {
                         "id": 370,
                         "name": "Javascript"
-                    }
-                ]
-            },
-            {
-                "id": 80,
-                "companyName": "Harber, Kirlin and Thompson",
-                "startDate": "2013-05-01T00:00:00+01:00",
-                "endDate": "2014-07-01T00:00:00+01:00",
-                "skills": [
-                    {
-                        "id": 370,
-                        "name": "Javascript"
-                    },
-                    {
-                        "id": 400,
-                        "name": "Java"
                     }
                 ]
             },
@@ -63,6 +47,22 @@
                     {
                         "id": 370,
                         "name": "Javascript"
+                    }
+                ]
+            },
+            {
+                "id": 80,
+                "companyName": "Harber, Kirlin and Thompson",
+                "startDate": "2013-05-01T00:00:00+01:00",
+                "endDate": "2014-07-01T00:00:00+01:00",
+                "skills": [
+                    {
+                        "id": 370,
+                        "name": "Javascript"
+                    },
+                    {
+                        "id": 400,
+                        "name": "Java"
                     }
                 ]
             }

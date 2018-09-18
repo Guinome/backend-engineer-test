@@ -1,0 +1,32 @@
+{
+    "freelance": {
+        "id": 42,
+        "computedSkills": [
+            {
+                "id": 241,
+                "name": "React",
+                "durationInMonths": 72
+            },
+            {
+                "id": 270,
+                "name": "Node.js",
+                "durationInMonths": 72
+            },
+            {
+                "id": 370,
+                "name": "Javascript",
+                "durationInMonths": 72
+            },
+            {
+                "id": 470,
+                "name": "MySQL",
+                "durationInMonths": 32
+            },
+            {
+                "id": 400,
+                "name": "Java",
+                "durationInMonths": 40
+            }
+        ]
+    }
+}

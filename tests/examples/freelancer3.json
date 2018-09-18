@@ -11,6 +11,26 @@
         "availabilityDate": "2018-06-13T00:00:00+01:00",
         "professionalExperiences": [
             {
+                "id": 234234,
+                "companyName": "Okuneva, Kerluke and Strosin",
+                "startDate": "2018-05-01T00:00:00+01:00",
+                "endDate": "2018-07-01T00:00:00+01:00",
+                "skills": [
+                    {
+                        "id": 241,
+                        "name": "React"
+                    },
+                    {
+                        "id": 270,
+                        "name": "Node.js"
+                    },
+                    {
+                        "id": 370,
+                        "name": "Javascript"
+                    }
+                ]
+            },
+            {
                 "id": 4,
                 "companyName": "Okuneva, Kerluke and Strosin",
                 "startDate": "2012-01-01T00:00:00+01:00",
