@@ -40,7 +40,7 @@ outputFiles.forEach(file => {
 freelancers.forEach((freelancer, index) => {
     describe('computedSkillsService.getComputedSkills(experiences)', function () {
         var experiences = computedSkillsService.getExperiencesOrderedByStartDate(freelancer.freelance);
-        var skills = computedSkillsService.getSkillsWithDates(experiences)
+        var skills = computedSkillsService.getSkillsWithRanges(experiences)
         var computedSkills = computedSkillsService.getComputedSkills(skills);
         
         const computedSkillsOutput = outputs[index].freelance.computedSkills;

@@ -1,34 +1,34 @@
 const _ = require('lodash');
-const moment = require('moment');
+const Moment = require('moment');
+const momentRange = require('moment-range');
+const moment = momentRange.extendMoment(Moment);
 module.exports = {
     getExperiencesOrderedByStartDate(freelance){
         return _.orderBy(freelance.professionalExperiences, ['startDate'], ['asc']);
     },
 
-    getSkillsWithDates(experiences){
+    getSkillsWithRanges(experiences){
         var skills = [];
         for (let index = 0; index < experiences.length; index++) {
-            var dates = {
-                'startDate': experiences[index].startDate,
-                'endDate': experiences[index].endDate
-            };
+            const timeInterval = experiences[index].startDate + '/' + experiences[index].endDate;
+            startDate = moment(experiences[index].startDate);
+            endDate = moment(experiences[index].endDate);
+            const range = moment.range(startDate,endDate);
             experiences[index].skills.forEach(skill => {
                 newSkill = _.find(skills, ['id', skill.id]);
                 if(newSkill === undefined){
                     newSkill = skill;
-                    newSkill.dates = [];
-                    newSkill.dates.push(dates);
+                    newSkill.ranges = [];
                     skills.push(newSkill);
-                } else {
-                    newSkill.dates.push(dates);
                 }
+                newSkill.ranges.push(range);
             });
         }
         return skills;
     },
 
     getComputedSkills(skills){
-        // console.log(JSON.stringify((skills), null, 2)); 
+        console.log(JSON.stringify((skills), null, 2)); 
         var computedSkills = [];
 
         _.forEach(skills, skill => {
@@ -37,89 +37,44 @@ module.exports = {
                 'name': skill.name,
                 'durationInMonths': 0
             };
-            const periods = this.cleanPeriods(skill.dates);
-            durationInMonths = 0;
-            periods.forEach(period => {
-                const duration = this.getPeriodeDuration(period);
-                durationInMonths += duration;
-            });
+            const cleanedRanges = this.cleanRanges(skill.ranges);
+            const durationInMonths = this.getDuration(cleanedRanges);
+            // durationInMonths = 0;
+            // periods.forEach(period => {
+            //     const duration = this.getPeriodeDuration(period);
+            //     durationInMonths += duration;
+            // });
             newSkill.durationInMonths = Math.round(durationInMonths);
             computedSkills.push(newSkill);
         });
         return computedSkills;
     },
 
-    cleanPeriods(periods){
-        let orderedPeriods = _.orderBy(periods, ['startDate'], ['asc']);
-        let cleanedPeriods = _.take(orderedPeriods);
-
-        _.forEach(orderedPeriods, period => {
-            if(!cleanedPeriods.length){
-                cleanedPeriods.push(period);
+    cleanRanges(ranges){
+        let finalRanges = [];
+        ranges.forEach((range, index) => {
+            if (!index) {
+                finalRanges.push(range);
                 return;
             }
-            var newStartDate = period.startDate;
-            var newEndDate = period.endDate;
-            var oldStartDate = cleanedPeriods[cleanedPeriods.length - 1].startDate;
-            var oldEndDate = cleanedPeriods[cleanedPeriods.length - 1].endDate;
+            const previousRange = finalRanges[finalRanges.length - 1];
+            const currentRange = range;
 
-            //oldDates:       -----
-            //newDates:   ---
-            //add: 
-            //theoretically impossible, cleanedPeriods are reordered by start date
-            if(newEndDate <= oldStartDate) {
-                let newImpossibleDate = {
-                    'startDate': newStartDate,
-                    'endDate': newEndDate
-                };
-                cleanedPeriods.unshift(newImpossibleDate);
+            if (previousRange.overlaps(currentRange, { adjacent: true })) {
+                finalRanges[finalRanges.length - 1] = finalRanges[finalRanges.length - 1].add(currentRange);
+            } else {
+                finalRanges.push(currentRange);
             }
-
-            //oldDates:     ---[
-            //newDates:   -----[
-            //add:        --
-            if (newStartDate < oldStartDate && newEndDate < oldEndDate){
-                let newFirstDate = {
-                    'startDate': newStartDate,
-                    'endDate': oldStartDate
-                };
-                cleanedPeriods.unshift(newFirstDate);
-            }
-
-            //oldDates:     ]--
-            //newDates:     ]------
-            //add:             ----
-            if(newStartDate <= oldEndDate && newEndDate > oldEndDate) {
-                let newLastDate = {
-                    'startDate': oldEndDate,
-                    'endDate': newEndDate
-                };
-                cleanedPeriods.push(newLastDate);
-            }
-
-            //oldDates:     ]-
-            //newDates:        ----[
-            //add:             ----[
-            if (newStartDate >= oldEndDate) {
-                let newLastDate = {
-                    'startDate': newStartDate,
-                    'endDate': newEndDate
-                };
-                cleanedPeriods.push(newLastDate);
-            }
-            cleanedPeriods.sort((a, b) => {
-                return a - b;
-            });
         });
-        return cleanedPeriods;
+        return finalRanges;
     },
 
-    getPeriodeDuration(dates) {
-        var startDate = moment(dates.startDate);
-        var endDate = moment(dates.endDate);
-
-        var duration = Math.round(endDate.diff(startDate, 'month', true));
-        return duration;
+    getDuration(ranges) {
+        let duration = 0;
+        ranges.forEach((range,index) => {
+            duration += range.diff('months', true);
+        });
+        return Math.round(duration);
     },
 
     //check if we have the same properties and types of values than in `[examples | exercice]/freelancer.json`

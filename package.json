@@ -4,7 +4,8 @@
   "description": "comet backend engineer test",
   "dependencies": {
     "lodash": "^4.17.10",
-    "moment": "^2.22.2"
+    "moment": "^2.22.2",
+    "moment-range": "^4.0.1"
   },
   "engines": {
     "node": "8.4.0"

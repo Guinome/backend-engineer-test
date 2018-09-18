@@ -21,7 +21,7 @@ if(!isJsonOk){
 //order professional experiences by startdate
 var experiences    = computedSkillsService.getExperiencesOrderedByStartDate(freelancer.freelance)
 // get skills with dates
-var skills 		   = computedSkillsService.getSkillsWithDates(experiences)
+var skills = computedSkillsService.getSkillsWithRanges(experiences)
 // compute all skills duration
 var computedSkills = computedSkillsService.getComputedSkills(skills);
 
