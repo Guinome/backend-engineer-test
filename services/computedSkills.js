@@ -28,7 +28,6 @@ module.exports = {
     },
 
     getComputedSkills(skills){
-        console.log(JSON.stringify((skills), null, 2)); 
         var computedSkills = [];
 
         _.forEach(skills, skill => {
@@ -39,11 +38,6 @@ module.exports = {
             };
             const cleanedRanges = this.cleanRanges(skill.ranges);
             const durationInMonths = this.getDuration(cleanedRanges);
-            // durationInMonths = 0;
-            // periods.forEach(period => {
-            //     const duration = this.getPeriodeDuration(period);
-            //     durationInMonths += duration;
-            // });
             newSkill.durationInMonths = Math.round(durationInMonths);
             computedSkills.push(newSkill);
         });
